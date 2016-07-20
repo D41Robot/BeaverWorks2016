@@ -10,11 +10,14 @@ class blob_steering:
 	Kp=.5
 	Kd=0
 	Ki=0
+
+
 	def __init__(self):
-		rospy.Subscriber("image_size", Float32)
+		self.stopped=False
+		rospy.Subscriber("image_size", Float32, self.stopper)
 		rospy.Subscriber("imagepos_error", Float32, self.calcdrive)
 
-		self.pub = rospy.Publisher('/racecar/ackermann_cmd_mux/input/teleop', AckermannDriveStamped, queue_size=5)
+		self.pub = rospy.Publisher('/vesc/ackermann_cmd_mux/input/teleop', AckermannDriveStamped, queue_size=5)
 
 	def drive(self, angle, speed):
 
@@ -25,13 +28,21 @@ class blob_steering:
         	self.pub.publish(ackmsg)
 		#print "published"
 	
+	def stopper(self, msg):
+		self.stopped=msg.data>500
+
 	def calcdrive(self, msg):
+                msg = 640.0 - msg.data
 		#float f = float
 		#print str(type(msg))
-		if msg>0:
-			self.drive(.5, 1.0)
+                print msg
+		if self.stopped:
+			self.drive(0,0)
+                        return
+		elif msg>0:
+			self.drive(.5, 0.5)
 		else:
-			self.drive(-.5, 1.0)
+			self.drive(-.5, 0.5)
 
 if __name__=="__main__":
     rospy.init_node('blob_steering')
