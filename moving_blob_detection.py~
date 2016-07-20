@@ -53,7 +53,7 @@ class blob_detector:
  
         for i in contours: #Check the size of the contour
               size = cv2.contourArea(i)
-              print('Box size in pixels: ' + size)
+              print size
               if Min_Size > 1000: #If the contour is larger than 1000 pixels
                   x,y,w,h = cv2.boundingRect(i) #Draw a box around the contour
                   cv2.rectangle(image_cv, (x,y) , (x+w, y+h), (0,0,255),2)
