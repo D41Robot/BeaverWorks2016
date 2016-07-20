@@ -1,11 +1,12 @@
 #!/usr/bin/env python
+# image is 1280X720
 import cv2
 import rospy
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
 import threading
 import numpy as np
-contour_size = 1500
+size = 0
 
 class blob_detector:
     def __init__(self):
@@ -34,25 +35,23 @@ class blob_detector:
         hsv = cv2.cvtColor(image_cv, cv2.COLOR_BGR2HSV)
 
     # define range of blue color in HSV
-        lower = np.array([0,100,200])
-        upper = np.array([15,255,255])
+        lower = np.array([50,100,100])
+        upper = np.array([70,255,255])
 
     # Threshold the HSV image to get only blue colors
         mask = cv2.inRange(hsv, lower, upper)
 
-    # Bitwise-AND mask and original image
-        #res = cv2.bitwise_and(cap,cap, mask= mask)
-
 
 #Create contours
 	contours = cv2.findContours(mask, cv2.cv.CV_RETR_EXTERNAL, cv2.cv.CV_CHAIN_APPROX_NONE)[0]
-#Draw contours
+#Draw contours, nonadjusted
 #        cv2.drawContours(image_cv, contours, -1, np.array([12,240,210]))
  
-        for i in contours:
+        for i in contours: #Check the size of the contour
               size = cv2.contourArea(i)
-              if size > 1000:
-                  x,y,w,h = cv2.boundingRect(i)
+              print size
+              if size > 1000: #If the contour is larger than 1000 pixrls
+                  x,y,w,h = cv2.boundingRect(i) #Draw a box around the contour
                   cv2.rectangle(image_cv, (x,y) , (x+w, y+h), (0,255,0),2)
             
 
