@@ -47,7 +47,7 @@ class blob_steering:
 		if self.stopped:
 			self.drive(0,0) #N <--remove this line
                         return 
-		elif math.abs(error<=20){
+		elif abs(error)<=20:
 			self.drive(0, 0.5)
 		elif error>0:
 			self.drive(.5, 0.5)
