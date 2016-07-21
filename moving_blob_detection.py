@@ -49,7 +49,7 @@ class blob_detector:
 	contours = cv2.findContours(mask, cv2.cv.CV_RETR_EXTERNAL, cv2.cv.CV_CHAIN_APPROX_NONE)[0]
 #Draw contours, nonadjusted
 #        cv2.drawContours(image_cv, contours, -1, np.array([12,240,210]))
-        size = 0
+        c_size = 0
         error = 0
  
         for i in contours: #Check the size of the contour
@@ -65,7 +65,7 @@ class blob_detector:
         try:
             self.pub_image.publish(self.bridge.cv2_to_imgmsg(image_cv, "bgr8"))
 	    self.pub_error.publish(error) #error tells how far left/right
-	    self.pub_size.publish(size) #size used fro distance 
+	    self.pub_size.publish(c_size) #size used fro distance 
         except CvBridgeError as e:
             print(e)
         self.thread_lock.release()
