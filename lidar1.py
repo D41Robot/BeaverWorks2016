@@ -62,10 +62,10 @@ class WallE():
             self.angle=self.getSteeringCmd(-error, -1, 1)
             self.death=min(msg.ranges[525:555])<.5
 
-    def callback2(self, msg):
-        if(msg.buttons[0]):
+    def respondToColor(self, msg):
+        if msg:
             self.right = True
-        elif(msg.buttons[1]):
+        else:
             self.right = False
         
     def shutdown(self):
@@ -86,20 +86,21 @@ class WallE():
         rate = 10 
         r = rospy.Rate(rate)
         
-	self.started = False#N
+	self.started = True #N
 
         # node specific topics (remap on command line or in launch file)
         self.drive = rospy.Publisher('/vesc/ackermann_cmd_mux/input/navigation', AckermannDriveStamped, queue_size=5)
         
         #sets the subscriber
         rospy.Subscriber('scan', LaserScan, self.callback)
-        rospy.Subscriber('vesc/joy', Joy, self.callback2)
+        #rospy.Subscriber('vesc/joy', Joy, self.callback2)
 
 	rospy.Subscriber("color_found", Bool, self.starter)#N
+	rospy.Subscriber("colorRed", Bool, self.respondToColor)
         
         # set control parameters
         speed = 2.0 # constant travel speed in meters/second
-        dist_trav = 20.0 # meters to travel in time travel mode
+        dist_trav = 2000.0 # meters to travel in time travel mode
         
         # fill out fields in ackermann steering message (to go straight)
         drive_cmd = AckermannDriveStamped()
@@ -126,6 +127,7 @@ class WallE():
                 drive_cmd.drive.speed = speed
 		
 	    if self.started:#N
+                print ("Starting Lidar!")
             	self.drive.publish(drive_cmd) # post this message  #N <--indent this line
 
             #Chill out for a bit
